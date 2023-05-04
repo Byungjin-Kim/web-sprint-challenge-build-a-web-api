@@ -6,16 +6,13 @@ const Project = require('./projects-model');
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+
+router.get('/', (req, res, next) => {
     Project.get()
         .then(pro => {
             res.json(pro);
         })
-        .catch(err => {
-            res.status(500).json({
-                message: 'Error to get Projects'
-            })
-        });
+        .catch(next);
 });
 
 router.get('/:id', validateProjectId, (req, res) => {
@@ -51,7 +48,7 @@ router.delete('/:id', validateProjectId, async (req, res, next) => {
 router.get('/:id/actions', validateProjectId, async (req, res, next) => {
     try {
         const result = await Project.getProjectActions(req.params.id);
-        res.json(result)
+        res.json(result);
     } catch (error) {
         next(error);
     }
@@ -60,7 +57,7 @@ router.get('/:id/actions', validateProjectId, async (req, res, next) => {
 router.use((error, req, res, next) => {
     res.status(error.status || 500).json({
         message: error.message,
-        customMessage: 'Error to get Projects',
+        customMessage: 'Error getting Projects',
     });
 });
 
