@@ -20,7 +20,7 @@ async function validateProjectId(req, res, next) {
 
 function validateProjectBody(req, res, next) {
     const { name, description, completed } = req.body;
-    if (!name || !description || !completed) {
+    if (!name || !description || completed === null || completed === undefined) {
         res.status(400).json({
             message: 'missing the required fields'
         })
@@ -32,6 +32,21 @@ function validateProjectBody(req, res, next) {
     }
 }
 
+async function checkId(req, res, next) {
+    try {
+        const pro = await Project.get(req.params.id);
+        if (pro) {
+            req.pro = pro; // saves other middlewarws a db trip
+            next();
+        } else {
+            // outcome 3: send an error to the err handling middleware
+            next({ status: 404, message: 'not found!' });
+        }
+    } catch (error) {
+        next(error);
+    }
+}
 
 
-module.exports = { validateProjectId, validateProjectBody }
+
+module.exports = { validateProjectId, validateProjectBody, checkId }

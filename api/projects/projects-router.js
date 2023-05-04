@@ -31,6 +31,17 @@ router.post('/', validateProjectBody, (req, res, next) => {
         .catch(next);
 });
 
+router.put('/:id', validateProjectBody, validateProjectId, async (req, res, next) => {
+    const update = await Project.update(req.params.id, req.body)
+    try {
+        res.status(201).json(update)
+    } catch (err) {
+        next(err)
+    }
+})
+
+
+
 router.use((error, req, res, next) => {
     res.status(error.status || 500).json({
         message: error.message,
