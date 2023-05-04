@@ -13,14 +13,14 @@ async function validateProjectId(req, res, next) {
             req.project = project;
             next();
         }
-    } catch (err) {
-        next(err);
+    } catch (error) {
+        next(error);
     }
 }
 
 function validateProjectBody(req, res, next) {
     const { name, description, completed } = req.body;
-    if (!name || !description || completed === null || completed === undefined) {
+    if (!name || !description || !(completed === false || completed === true)) {
         res.status(400).json({
             message: 'missing the required fields'
         })

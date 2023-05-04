@@ -12,7 +12,6 @@ router.get('/', (req, res) => {
             res.json(pro);
         })
         .catch(err => {
-            console.log(err);
             res.status(500).json({
                 message: 'Error to get Projects'
             })
@@ -32,26 +31,37 @@ router.post('/', validateProjectBody, (req, res, next) => {
 });
 
 router.put('/:id', validateProjectBody, validateProjectId, async (req, res, next) => {
-    const update = await Project.update(req.params.id, req.body)
     try {
-        res.status(201).json(update)
-    } catch (err) {
-        next(err)
+        const update = await Project.update(req.params.id, req.body);
+        res.status(201).json(update);
+    } catch (error) {
+        next(error);
     }
 })
 
+router.delete('/:id', validateProjectId, async (req, res, next) => {
+    try {
+        await Project.remove(req.params.id);
+        res.json(req.project);
+    } catch (error) {
+        next(error);
+    }
+});
 
+router.get('/:id/actions', validateProjectId, async (req, res, next) => {
+    try {
+        const result = await Project.getProjectActions(req.params.id);
+        res.json(result)
+    } catch (error) {
+        next(error);
+    }
+});
 
 router.use((error, req, res, next) => {
     res.status(error.status || 500).json({
         message: error.message,
-        customMessage: 'Error in post router',
+        customMessage: 'Error to get Projects',
     });
 });
-
-
-
-
-
 
 module.exports = router;
